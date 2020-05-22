@@ -219,7 +219,7 @@ public class HdfsTest {
     }
 
     /**
-     * 查看指定目录下所有文件的信息
+     * 查看指定目录下所有文件目录的信息
      * @throws Exception
      */
     @Test
@@ -239,7 +239,17 @@ public class HdfsTest {
     public void listFilesRecursive() throws Exception {
         RemoteIterator<LocatedFileStatus> files = fileSystem.listFiles(new Path("/hdfs-api"), true);
         while (files.hasNext()) {
-            System.out.println(files.next());
+            LocatedFileStatus fileStatus = files.next();
+            System.out.println(fileStatus);
+            System.out.println(fileStatus.getPath().getName());
+            BlockLocation[] blockLocations = fileStatus.getBlockLocations();
+            for (BlockLocation blockLocation : blockLocations) {
+                String[] hosts = blockLocation.getHosts();
+                for (String host : hosts) {
+                    System.out.println(host);
+                }
+            }
+            System.out.println("----------------------------");
         }
     }
 

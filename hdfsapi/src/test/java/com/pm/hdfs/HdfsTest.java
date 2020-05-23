@@ -266,4 +266,21 @@ public class HdfsTest {
             System.out.println(block);
         }
     }
+
+    /**
+     * 判断是文件还是文件夹
+     * @throws Exception
+     */
+    @Test
+    public void testListStatus() throws Exception {
+        FileStatus[] fileStatuses = fileSystem.listStatus(new Path("/hdfs-api"));
+        for (FileStatus fileStatus : fileStatuses) {
+            if(fileStatus.isFile()){
+                System.out.println("文件:"+fileStatus.getPath().getName());
+            }else {
+                System.out.println("目录:"+fileStatus.getPath().getName());
+            }
+        }
+
+    }
 }

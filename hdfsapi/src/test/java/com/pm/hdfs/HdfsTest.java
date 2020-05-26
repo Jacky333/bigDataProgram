@@ -24,11 +24,12 @@ public class HdfsTest {
     private static final String HDFS_PATH = "hdfs://192.168.147.133:9000";
     private static final String HDFS_USER = "root";
     private static FileSystem fileSystem;
+    Configuration configuration;
 
     @Before
     public void prepare() {
         try {
-            Configuration configuration = new Configuration();
+            configuration = new Configuration();
             // 这里我启动的是单节点的 Hadoop,所以副本系数设置为 1,默认值为 3
             configuration.set("dfs.replication", "2");
             fileSystem = FileSystem.get(new URI(HDFS_PATH), configuration, HDFS_USER);
@@ -148,6 +149,7 @@ public class HdfsTest {
 
     /**
      * 删除目录或文件
+     *
      * @throws Exception
      */
     @Test
@@ -164,6 +166,7 @@ public class HdfsTest {
 
     /**
      * 上传文件到HDFS
+     *
      * @throws Exception
      */
     @Test
@@ -176,6 +179,7 @@ public class HdfsTest {
 
     /**
      * 上传大文件并显示上传进度
+     *
      * @throws Exception
      */
     @Test
@@ -202,6 +206,7 @@ public class HdfsTest {
 
     /**
      * 从HDFS上下载文件
+     *
      * @throws Exception
      */
     @Test
@@ -220,6 +225,7 @@ public class HdfsTest {
 
     /**
      * 查看指定目录下所有文件目录的信息
+     *
      * @throws Exception
      */
     @Test
@@ -233,6 +239,7 @@ public class HdfsTest {
 
     /**
      * 递归查看指定目录下所有文件的信息
+     *
      * @throws Exception
      */
     @Test
@@ -255,6 +262,7 @@ public class HdfsTest {
 
     /**
      * 查看文件的块信息
+     *
      * @throws Exception
      */
     @Test
@@ -269,18 +277,33 @@ public class HdfsTest {
 
     /**
      * 判断是文件还是文件夹
+     *
      * @throws Exception
      */
     @Test
     public void testListStatus() throws Exception {
         FileStatus[] fileStatuses = fileSystem.listStatus(new Path("/hdfs-api"));
         for (FileStatus fileStatus : fileStatuses) {
-            if(fileStatus.isFile()){
-                System.out.println("文件:"+fileStatus.getPath().getName());
-            }else {
-                System.out.println("目录:"+fileStatus.getPath().getName());
+            if (fileStatus.isFile()) {
+                System.out.println("文件:" + fileStatus.getPath().getName());
+            } else {
+                System.out.println("目录:" + fileStatus.getPath().getName());
             }
         }
 
+    }
+
+    /**
+     * 把磁盘上的文件上传到dfs
+     */
+    @Test
+    public void putFileToHdfs() throws IOException {
+        //输入流
+        FileInputStream fis = new FileInputStream(new File("G:\\bigData\\OBS-Studio-23.1-Full-Installer-x64.exe"));
+        //输出流
+        FSDataOutputStream fos = fileSystem.create(new Path("/hdfs-api/test1/aa.exe"));
+        IOUtils.copyBytes(fis, fos, configuration);
+        IOUtils.closeStream(fos);
+        IOUtils.closeStream(fis);
     }
 }
